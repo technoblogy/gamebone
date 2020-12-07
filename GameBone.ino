@@ -1,7 +1,7 @@
-/* GameBone Handheld Electronic Game
-   ATtiny85 @ 1 MHz (internal oscillator; BOD disabled)
+/* GameBone Handheld Electronic Game v2
 
-   David Johnson-Davies - www.technoblogy.com - 23rd January 2017
+   David Johnson-Davies - www.technoblogy.com - 7th December 2020
+   ATtiny85 @ 1 MHz (internal oscillator; BOD disabled)
    
    CC BY 4.0
    Licensed under a Creative Commons Attribution 4.0 International license: 
@@ -27,9 +27,9 @@ int sequence[maximum];
 const uint8_t scale[] PROGMEM = {239,226,213,201,190,179,169,160,151,142,134,127};
 
 void note (int n, int octave) {
-  DDRB = DDRB | 1<<DDB1;                     // PB1 (Arduino 1) as output
   int prescaler = 8 - (octave + n/12);
   if (prescaler<1 || prescaler>7) prescaler = 0;
+  DDRB = (DDRB & ~(1<<DDB1)) | (prescaler != 0)<<DDB1;
   OCR1C = pgm_read_byte(&scale[n % 12]) - 1;
   TCCR1 = 1<<CTC1 | 1<<COM1A0 | prescaler;
 }
